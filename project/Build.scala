@@ -9,7 +9,7 @@ object Build {
   implicit class ProjectOps(self: Project) {
     def standard: Project = {
       self
-          .settings(organization := "org.picoworks")
+          .settings(organization := "com.dispalt")
           .settings(resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases")
           .settings(scalacOptions := Seq("-feature", "-deprecation", "-unchecked", "-Xlint", "-Yrangepos", "-encoding", "utf8"))
           .settings(scalacOptions in Test ++= Seq("-Yrangepos"))

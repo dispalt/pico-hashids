@@ -5,32 +5,34 @@ import Build._
 
 name := "pico-hashids"
 
-organization := "org.pico"
+organization := "com.dispalt"
 
 lazy val `pico-hashids` = Project(id = "pico-hashids", base = file("pico-hashids"))
   .standard
-  .settings(publishTo := Some("Releases" at "s3://dl.john-ky.io/maven/releases"))
-  .settings(publishConfiguration := publishConfiguration.value.withOverwrite(true))
-  .settings(publishLocalConfiguration := publishLocalConfiguration.value.withOverwrite(true))
+  .settings(publishTo := sonatypePublishToBundle.value)
+  .settings(crossScalaVersions := Seq("2.11.8", "2.12.12", "2.13.3"))
   .testLibs(scalacheck, specs2_core, specs2_scalacheck)
 
 lazy val root = Project(id = "all", base = file("."))
   .notPublished
   .aggregate(`pico-hashids`)
 
-crossScalaVersions := Seq("2.11.8", "2.12.0", "2.13.2")
+crossScalaVersions := Seq("2.11.8", "2.12.12", "2.13.3")
 
-version in ThisBuild := Process("./version.sh").lineStream.head.trim
+// To sync with Maven central, you need to supply the following information:
+publishMavenStyle := true
 
-credentials += Credentials("Sonatype Nexus Repository Manager",
-  "oss.sonatype.org",
-  System.getenv("SONATYPE_USERNAME"),
-  System.getenv("SONATYPE_PASSWORD"))
-
-pgpPassphrase := Some(Option(System.getenv("GPG_PASSPHRASE")).getOrElse("").toArray)
+version in ThisBuild := "4.5.153"
 
 // Your profile name of the sonatype account. The default is the same with the organization value
-sonatypeProfileName := "org.pico"
+sonatypeProfileName := "com.dispalt"
+
+publishTo := {
+  val v = version.value
+  val nexus = "https://oss.sonatype.org/"
+  if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at nexus + "content/repositories/snapshots")
+  else Some("releases" at nexus + "service/local/staging/deploy/maven2")
+}
 
 // To sync with Maven central, you need to supply the following information:
 pomExtra in Global := {
